@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识库管理后台 - 交互图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f0f2f5;
+    padding: 30px;
+    color: #333;
+  }
+  .page-title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #1a1a1a;
+  }
+  .container {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+  }
+
+  /* 左侧菜单 */
+  .sidebar {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 16px 0;
+    height: fit-content;
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 8px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: #4a6cf7;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; font-weight: bold;
+  }
+  .logo-text { font-size: 15px; font-weight: 600; color: #4a6cf7; }
+
+  .menu-group { margin-bottom: 4px; }
+  .menu-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+  }
+  .menu-title:hover { background: #f5f7fa; }
+  .menu-icon { width: 16px; text-align: center; }
+  .menu-arrow { margin-left: auto; font-size: 11px; color: #999; }
+
+  .menu-item {
+    padding: 8px 16px 8px 40px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .menu-item:hover { background: #f5f7fa; color: #4a6cf7; }
+  .menu-item.active {
+    background: #eef1ff;
+    color: #4a6cf7;
+    border-right: 3px solid #4a6cf7;
+  }
+  .menu-item .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+  .menu-item.active .dot { background: #4a6cf7; }
+
+  /* 右侧内容区 */
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .content-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 20px;
+  }
+  .breadcrumb {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 16px;
+  }
+  .breadcrumb span { color: #4a6cf7; }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  /* 工具栏 */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+  .btn-primary {
+    padding: 8px 18px;
+    background: #4a6cf7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background: #3a5ce7; }
+  .btn-default {
+    padding: 6px 14px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #555;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .search-box input {
+    border: none;
+    outline: none;
+    font-size: 13px;
+    width: 160px;
+  }
+
+  /* 表格 */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    background: #f8f9fa;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 1px solid #eee;
+  }
+  .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+  }
+  .data-table tr:hover { background: #fafbfc; }
+  .tag-link {
+    color: #4a6cf7;
+    cursor: pointer;
+  }
+  .tag-link:hover { text-decoration: underline; }
+  .tag-edit { color: #4a6cf7; cursor: pointer; margin: 0 8px; }
+  .tag-del { color: #ff4d4f; cursor: pointer; }
+
+  /* 详情页标签 */
+  .detail-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 16px;
+  }
+  .detail-tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .detail-tab:hover { color: #4a6cf7; }
+  .detail-tab.active {
+    color: #4a6cf7;
+    border-bottom-color: #4a6cf7;
+    font-weight: 600;
+  }
+
+  /* 标注面板 */
+  .anno-panel {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .anno-panel h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #333;
+  }
+  .anno-list {
+    list-style: none;
+  }
+  .anno-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: #555;
+  }
+  .anno-badge {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #4a6cf7;
+    color: #fff;
+    font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* 分页 */
+  .pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #666;
+  }
+  .page-btn {
+    padding: 4px 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .page-btn.active {
+    background: #4a6cf7;
+    color: #fff;
+    border-color: #4a6cf7;
+  }
+
+  /* 交互提示 */
+  .interact-hint {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #e6f0ff;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #4a6cf7;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">知识库管理后台 - 交互组件标注图</div>
+
+<div class="container">
+  <!-- 左侧菜单 -->
+  <div class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">L</div>
+      <div class="logo-text">LegendAI</div>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-title" onclick="toggleMenu(this)">
+        <span class="menu-icon">📁</span>
+        智能体知识库管理
+        <span class="menu-arrow">▼</span>
+      </div>
+      <div class="menu-item active" onclick="selectMenu(this, 'data')">
+        <span class="dot"></span> 数据处理
+      </div>
+      <div class="menu-item" onclick="selectMenu(this, 'version')">
+        <span class="dot"></span> 版本管理
+      </div>
+      <div class="menu-item" onclick="selectMenu(this, 'test')">
+        <span class="dot"></span> 知识对话测试
+      </div>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-title" onclick="toggleMenu(this)">
+        <span class="menu-icon">⚙️</span>
+        智能体配置中心
+        <span class="menu-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-title" onclick="toggleMenu(this)">
+        <span class="menu-icon">📊</span>
+        智能体数据运营
+        <span class="menu-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-title" onclick="toggleMenu(this)">
+        <span class="menu-icon">🌐</span>
+        场景广场
+        <span class="menu-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-title" onclick="toggleMenu(this)">
+        <span class="menu-icon">🔧</span>
+        平台管理
+        <span class="menu-arrow">▼</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧内容 -->
+  <div class="main-content">
+    <!-- 知识库列表 -->
+    <div class="content-card" id="listView">
+      <div class="breadcrumb">LegendAI > <span>数据处理</span></div>
+      <div class="section-title">知识库</div>
+
+      <div class="toolbar">
+        <button class="btn-primary" onclick="showToast('打开新建知识库弹窗')">+ 新建知识库</button>
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" placeholder="搜索知识库" onfocus="showToast('搜索框获得焦点')">
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>知识库名称</th>
+            <th>知识库描述</th>
+            <th>更新时间</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="showDetail('前海e站通')">
+            <td>03</td>
+            <td>前海e站通</td>
+            <td>-</td>
+            <td>2024-05-10 12:12</td>
+            <td>2024-05-10 12:12</td>
+            <td>
+              <span class="tag-link" onclick="event.stopPropagation();showToast('查看数据')">查看数据</span>
+              <span class="tag-edit" onclick="event.stopPropagation();showToast('编辑')">编辑</span>
+              <span class="tag-del" onclick="event.stopPropagation();showToast('删除')">删除</span>
+            </td>
+          </tr>
+          <tr onclick="showDetail('数智空间')">
+            <td>02</td>
+            <td>数智空间</td>
+            <td>-</td>
+            <td>2024-05-10 12:12</td>
+            <td>2024-05-10 12:12</td>
+            <td>
+              <span class="tag-link" onclick="event.stopPropagation();showToast('查看数据')">查看数据</span>
+              <span class="tag-edit" onclick="event.stopPropagation();showToast('编辑')">编辑</span>
+              <span class="tag-del" onclick="event.stopPropagation();showToast('删除')">删除</span>
+            </td>
+          </tr>
+          <tr onclick="showDetail('前海大脑')">
+            <td>01</td>
+            <td>前海大脑</td>
+            <td>知识总库</td>
+            <td>2024-05-10 12:12</td>
+            <td>2024-05-10 12:12</td>
+            <td>
+              <span class="tag-link" onclick="event.stopPropagation();showToast('查看数据')">查看数据</span>
+              <span class="tag-edit" onclick="event.stopPropagation();showToast('编辑')">编辑</span>
+              <span class="tag-del" onclick="event.stopPropagation();showToast('删除')">删除</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <span>共 3 条，第 1/1 页 每页</span>
+        <select style="padding:2px 6px;border:1px solid #ddd;border-radius:4px;">
+          <option>10</option>
+        </select>
+        <span>条</span>
+        <button class="page-btn active">1</button>
+      </div>
+    </div>
+
+    <!-- 知识库详情 -->
+    <div class="content-card" id="detailView" style="display:none;">
+      <div class="breadcrumb" onclick="backToList()" style="cursor:pointer;">
+        ← 返回知识库列表 > <span id="detailName">前海e站通</span>
+      </div>
+
+      <div class="detail-tabs">
+        <div class="detail-tab active" onclick="switchTab(this, 'faq')">常见问题</div>
+        <div class="detail-tab" onclick="switchTab(this, 'qa')">QA问答</div>
+        <div class="detail-tab" onclick="switchTab(this, 'doc')">文档上传</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn-primary" onclick="showToast('打开新建常见问题弹窗')">+ 新建常见问题</button>
+        <button class="btn-default" onclick="showToast('批量删除选中项')">🗑 批量删除</button>
+        <button class="btn-default" onclick="showToast('批量导入文件')">📥 批量导入</button>
+        <button class="btn-default" onclick="showToast('批量导出数据')">📤 批量导出</button>
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" placeholder="搜索问题或答案">
+        </div>
+      </div>
+
+      <table class="data-table" id="faqTable">
+        <thead>
+          <tr>
+            <th><input type="checkbox" onclick="toggleAll(this)"></th>
+            <th>ID</th>
+            <th>问题</th>
+            <th>答案</th>
+            <th>更新时间</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td>07</td>
+            <td>如何办理营业执照？</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">使用专业软件或访问深圳市市场监督管理局官网...</td>
+            <td>2024-05-10</td>
+            <td>2024-05-10</td>
+            <td>
+              <span class="tag-edit" onclick="showToast('编辑该行')">编辑</span>
+              <span class="tag-del" onclick="showToast('删除该行')">删除</span>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td>06</td>
+            <td>如何办理营业执照？</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">使用专业软件或访问深圳市市场监督管理局官网...</td>
+            <td>2024-05-10</td>
+            <td>2024-05-10</td>
+            <td>
+              <span class="tag-edit" onclick="showToast('编辑该行')">编辑</span>
+              <span class="tag-del" onclick="showToast('删除该行')">删除</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 组件标注 -->
+    <div class="content-card">
+      <div class="section-title">🏷️ 交互组件清单</div>
+      <div class="anno-panel">
+        <h4>左侧导航栏</h4>
+        <ul class="anno-list">
+          <li><span class="anno-badge">1</span>Logo 区域 - 品牌标识 + 系统名称</li>
+          <li><span class="anno-badge">2</span>一级菜单组 - 可展开/收起（智能体知识库管理、配置中心等）</li>
+          <li><span class="anno-badge">3</span>二级菜单项 - 当前选中项高亮显示（蓝色边框+背景）</li>
+        </ul>
+      </div>
+      <div class="anno-panel" style="margin-top:12px;">
+        <h4>右侧内容区</h4>
+        <ul class="anno-list">
+          <li><span class="anno-badge">4</span>面包屑导航 - 当前位置路径，支持点击返回</li>
+          <li><span class="anno-badge">5</span>操作按钮区 - 新建/批量删除/导入/导出</li>
+          <li><span class="anno-badge">6</span>搜索框 - 按关键词过滤列表数据</li>
+          <li><span class="anno-badge">7</span>数据表格 - 支持行点击进入详情、操作列（查看/编辑/删除）</li>
+          <li><span class="anno-badge">8</span>分页组件 - 页码切换、每页条数选择</li>
+          <li><span class="anno-badge">9</span>详情页标签 - 常见问题 / QA问答 / 文档上传 切换</li>
+          <li><span class="anno-badge">10</span>批量操作 - 表格首列复选框，支持全选</li>
+        </ul>
+      </div>
+      <div class="interact-hint">
+        💡 交互说明：点击左侧菜单切换模块 → 点击表格行进入详情 → 详情页顶部标签切换数据类型 → 操作列按钮执行单项操作
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast 提示 -->
+<div id="toast" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:6px;font-size:13px;display:none;z-index:1000;"></div>
+
+<script>
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = '【事件】' + msg;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 2000);
+  }
+
+  function toggleMenu(el) {
+    const arrow = el.querySelector('.menu-arrow');
+    arrow.textContent = arrow.textContent === '▼' ? '▶' : '▼';
+    const group = el.parentElement;
+    const items = group.querySelectorAll('.menu-item');
+    items.forEach(item => item.style.display = item.style.display === 'none' ? 'flex' : 'none');
+    showToast('菜单展开/收起');
+  }
+
+  function selectMenu(el, type) {
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    showToast('切换到：' + el.textContent.trim());
+  }
+
+  function showDetail(name) {
+    document.getElementById('listView').style.display = 'none';
+    document.getElementById('detailView').style.display = 'block';
+    document.getElementById('detailName').textContent = name;
+    showToast('进入知识库详情：' + name);
+  }
+
+  function backToList() {
+    document.getElementById('listView').style.display = 'block';
+    document.getElementById('detailView').style.display = 'none';
+    showToast('返回列表页');
+  }
+
+  function switchTab(el, type) {
+    document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const names = { faq: '常见问题', qa: 'QA问答', doc: '文档上传' };
+    showToast('切换到标签：' + names[type]);
+  }
+
+  function toggleAll(cb) {
+    document.querySelectorAll('#faqTable tbody input[type="checkbox"]').forEach(c => c.checked = cb.checked);
+    showToast(cb.checked ? '全选所有行' : '取消全选');
+  }
+</script>
+
+</body>
+</html>
