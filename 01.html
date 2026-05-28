@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前海数智人 - 交互组件图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f0f2f5;
+    padding: 40px;
+    color: #333;
+  }
+  .page-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #1a1a1a;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    padding: 24px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* 手机外壳 */
+  .phone-frame {
+    width: 280px;
+    height: 560px;
+    border: 3px solid #d0d0d0;
+    border-radius: 36px;
+    margin: 0 auto;
+    position: relative;
+    background: #f5f7fa;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  .phone-notch {
+    width: 120px;
+    height: 24px;
+    background: #d0d0d0;
+    border-radius: 0 0 12px 12px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+  .phone-screen {
+    padding: 36px 12px 12px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 顶部导航栏 */
+  .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 4px;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 8px;
+  }
+  .chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .back-arrow {
+    width: 20px; height: 20px;
+    border-left: 2px solid #333;
+    border-bottom: 2px solid #333;
+    transform: rotate(45deg);
+  }
+  .chat-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .chat-header-right {
+    display: flex;
+    gap: 12px;
+  }
+  .header-dot {
+    width: 4px; height: 4px;
+    background: #333;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .header-icon {
+    width: 20px; height: 20px;
+    border: 2px solid #333;
+    border-radius: 50%;
+  }
+
+  /* AI 信息区 */
+  .ai-info {
+    text-align: center;
+    padding: 8px 0;
+  }
+  .ai-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0 auto 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px; font-weight: bold;
+  }
+  .ai-name { font-size: 14px; font-weight: 600; }
+  .ai-desc {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    padding: 4px 12px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  /* 对话区 */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 4px;
+  }
+  .msg-row { display: flex; margin-bottom: 12px; }
+  .msg-row.user { justify-content: flex-end; }
+  .msg-bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .msg-row.ai .msg-bubble {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    color: #333;
+    border-top-left-radius: 4px;
+  }
+  .msg-row.user .msg-bubble {
+    background: #e6f0ff;
+    color: #333;
+    border-top-right-radius: 4px;
+  }
+  .msg-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+    margin-left: 4px;
+  }
+  .msg-action-btn {
+    width: 20px; height: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #999;
+    cursor: pointer;
+  }
+
+  /* 输入区 */
+  .input-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border-top: 1px solid #e8e8e8;
+  }
+  .voice-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #e6f0ff;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .text-input {
+    flex: 1;
+    height: 36px;
+    border: 1px solid #ddd;
+    border-radius: 18px;
+    padding: 0 14px;
+    font-size: 13px;
+    outline: none;
+  }
+  .send-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #4a90d9;
+    border: none;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  /* 右侧悬浮按钮 */
+  .float-btns {
+    position: absolute;
+    right: 8px;
+    bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .float-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #ddd;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  /* 标注样式 */
+  .annotation-list {
+    list-style: none;
+  }
+  .annotation-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 14px;
+  }
+  .anno-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #4a90d9;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .anno-text { color: #555; line-height: 1.5; }
+  .anno-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #e6f0ff;
+    color: #4a90d9;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  /* 交互提示 */
+  .hint-box {
+    margin-top: 16px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+  }
+  .hint-box strong { color: #333; }
+
+  /* 交互演示 */
+  .demo-area {
+    margin-top: 16px;
+  }
+  .demo-btn {
+    padding: 8px 16px;
+    background: #4a90d9;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+  .demo-btn:hover { background: #3a7bc8; }
+  .demo-output {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #555;
+    min-height: 40px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">前海数智人 - 交互组件标注图</div>
+
+<div class="container">
+  <!-- 左侧：手机界面 -->
+  <div class="card">
+    <div class="card-title">📱 前端交互界面</div>
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <!-- 顶部导航 -->
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="back-arrow"></div>
+            <div class="chat-title">前海数智人</div>
+          </div>
+          <div class="chat-header-right">
+            <span style="display:flex;gap:2px;align-items:center;">
+              <span class="header-dot"></span>
+              <span class="header-dot"></span>
+              <span class="header-dot"></span>
+            </span>
+            <div class="header-icon"></div>
+          </div>
+        </div>
+
+        <!-- AI 信息 -->
+        <div class="ai-info">
+          <div class="ai-avatar">AI</div>
+          <div class="ai-name">前海数智人</div>
+          <div class="ai-desc">本服务内容由人工智能生成，所提供的信息仅供参考。</div>
+        </div>
+
+        <!-- 对话区 -->
+        <div class="chat-area" id="chatArea">
+          <div class="msg-row user">
+            <div class="msg-bubble">如何线上预约前海石公园停车</div>
+          </div>
+          <div class="msg-row ai">
+            <div>
+              <div class="msg-bubble">
+                <strong>如何线上预约前海石公园停车</strong><br><br>
+                • 通过"i深圳"APP或小程序搜索"智慧停车"...<br>
+                • 也可在"美丽深圳"微信公众号...<br>
+                • 预约入口路径...<br><br>
+                <strong>预约规则与提示</strong><br>
+                • 可提前2小时预约...
+              </div>
+              <div class="msg-actions">
+                <div class="msg-action-btn">📋</div>
+                <div class="msg-action-btn">👍</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 输入区 -->
+        <div class="input-area">
+          <button class="voice-btn" id="voiceBtn" title="语音输入">🎤</button>
+          <input type="text" class="text-input" id="textInput" placeholder="按住说话">
+          <button class="send-btn" id="sendBtn" title="发送">➤</button>
+        </div>
+      </div>
+
+      <!-- 悬浮按钮 -->
+      <div class="float-btns">
+        <div class="float-btn" title="静音">🔇<br><span style="font-size:9px;">静音</span></div>
+        <div class="float-btn" title="清除">🗑️<br><span style="font-size:9px;">清除</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧：组件标注 -->
+  <div class="card">
+    <div class="card-title">🏷️ 交互组件清单</div>
+    <ul class="annotation-list">
+      <li>
+        <span class="anno-num">1</span>
+        <div class="anno-text">
+          <span class="anno-tag">顶部导航栏</span>
+          返回按钮 + 页面标题"前海数智人" + 更多操作菜单 + 用户头像入口
+        </div>
+      </li>
+      <li>
+        <span class="anno-num">2</span>
+        <div class="anno-text">
+          <span class="anno-tag">AI 形象区</span>
+          AI 头像（渐变圆形）、名称、免责声明提示条
+        </div>
+      </li>
+      <li>
+        <span class="anno-num">3</span>
+        <div class="anno-text">
+          <span class="anno-tag">对话消息气泡</span>
+          用户消息（右对齐，蓝色背景）/ AI 回复（左对齐，白色背景带边框），支持富文本格式
+        </div>
+      </li>
+      <li>
+        <span class="anno-num">4</span>
+        <div class="anno-text">
+          <span class="anno-tag">消息操作按钮</span>
+          每条 AI 消息下方附带复制、点赞等快捷操作
+        </div>
+      </li>
+      <li>
+        <span class="anno-num">5</span>
+        <div class="anno-text">
+          <span class="anno-tag">语音输入按钮</span>
+          底部左侧麦克风图标，按住即可语音输入
+        </div>
+      </li>
+      <li>
+        <span class="anno-num">6</span>
+        <div class="anno-text">
+          <span class="anno-tag">文本输入框</span>
+          圆角输入框，支持键盘输入，placeholder 提示"按住说话"
+        </div>
+      </li>
+      <li>
+        <span class="anno-num">7</span>
+        <div class="anno-text">
+          <span class="anno-tag">发送按钮</span>
+          蓝色圆形发送按钮，点击提交消息
+        </div>
+      </li>
+      <li>
+        <span class="anno-num">8</span>
+        <div class="anno-text">
+          <span class="anno-tag">右侧悬浮按钮</span>
+          静音开关、清除对话历史等快捷功能入口
+        </div>
+      </li>
+    </ul>
+
+    <div class="hint-box">
+      <strong>交互说明：</strong><br>
+      • 点击语音按钮可切换语音/文字输入模式<br>
+      • 输入框支持 Enter 快捷发送<br>
+      • 悬浮按钮常驻右侧，不影响主对话区
+    </div>
+
+    <div class="demo-area">
+      <div class="card-title" style="margin-top:20px;">🎮 交互演示</div>
+      <button class="demo-btn" onclick="simulateSend()">模拟发送消息</button>
+      <button class="demo-btn" onclick="simulateVoice()">模拟语音输入</button>
+      <button class="demo-btn" onclick="clearChat()">清空对话</button>
+      <div class="demo-output" id="demoOutput">点击上方按钮体验交互...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const chatArea = document.getElementById('chatArea');
+  const textInput = document.getElementById('textInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const voiceBtn = document.getElementById('voiceBtn');
+  const demoOutput = document.getElementById('demoOutput');
+
+  function addUserMsg(text) {
+    const row = document.createElement('div');
+    row.className = 'msg-row user';
+    row.innerHTML = `<div class="msg-bubble">${text}</div>`;
+    chatArea.appendChild(row);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  function addAiMsg(html) {
+    const row = document.createElement('div');
+    row.className = 'msg-row ai';
+    row.innerHTML = `<div><div class="msg-bubble">${html}</div><div class="msg-actions"><div class="msg-action-btn">📋</div><div class="msg-action-btn">👍</div></div></div>`;
+    chatArea.appendChild(row);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  sendBtn.addEventListener('click', () => {
+    const text = textInput.value.trim();
+    if (!text) return;
+    addUserMsg(text);
+    textInput.value = '';
+    demoOutput.textContent = `【发送事件】用户输入: "${text}"`;
+    setTimeout(() => {
+      addAiMsg('收到您的消息，前海数智人正在思考...');
+      demoOutput.textContent += ' → AI 已回复';
+    }, 600);
+  });
+
+  textInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendBtn.click();
+  });
+
+  voiceBtn.addEventListener('click', () => {
+    demoOutput.textContent = '【语音事件】开始录音...（模拟）';
+    voiceBtn.style.background = '#ff6b6b';
+    setTimeout(() => {
+      voiceBtn.style.background = '#e6f0ff';
+      addUserMsg('🎤 语音消息（已转文字）');
+      demoOutput.textContent += ' → 语音输入完成，已转为文字发送';
+    }, 1500);
+  });
+
+  function simulateSend() {
+    textInput.value = '附近有什么好吃的餐厅？';
+    sendBtn.click();
+  }
+
+  function simulateVoice() {
+    voiceBtn.click();
+  }
+
+  function clearChat() {
+    chatArea.innerHTML = '';
+    demoOutput.textContent = '【清空事件】对话历史已清空';
+  }
+</script>
+
+</body>
+</html>
